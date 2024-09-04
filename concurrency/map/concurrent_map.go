@@ -1,7 +1,7 @@
 package _map
 
 import (
-	"igit.58corp.com/storage-app/wredisproxy/wredisgoclient/util/concurrency/lock"
+	"go-util/concurrency/lock"
 )
 
 type threadSafeMap[K comparable, V any] struct {

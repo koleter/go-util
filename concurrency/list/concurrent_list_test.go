@@ -63,10 +63,10 @@ func Test_threadSafeList_Remove(t *testing.T) {
 		safeList.Append(i)
 	}
 	assert.True(t, safeList.Contain(func(i int, val int) bool {
-		return val == 3
+		return val == 2
 	}))
 	safeList.Remove(2)
 	assert.False(t, safeList.Contain(func(i int, val int) bool {
-		return val == 3
+		return val == 2
 	}))
 }

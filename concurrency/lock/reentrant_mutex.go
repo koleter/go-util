@@ -1,7 +1,7 @@
 package lock
 
 import (
-	"igit.58corp.com/storage-app/wredisproxy/wredisgoclient/util/g"
+	"go-util/g"
 	"runtime"
 	"sync/atomic"
 	"unsafe"

@@ -1,7 +1,7 @@
 package list
 
 import (
-	"igit.58corp.com/storage-app/wredisproxy/wredisgoclient/util/concurrency/lock"
+	"go-util/concurrency/lock"
 )
 
 type threadSafeList[T any] struct {
