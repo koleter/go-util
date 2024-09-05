@@ -1,7 +1,7 @@
 package _map
 
 import (
-	"go-util/concurrency/lock"
+	"github.com/koleter/go-util/concurrency/lock"
 )
 
 type threadSafeMap[K comparable, V any] struct {

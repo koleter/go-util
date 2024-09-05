@@ -1,7 +1,7 @@
 package list
 
 import (
-	"go-util/concurrency/lock"
+	"github.com/koleter/go-util/concurrency/lock"
 )
 
 type threadSafeList[T any] struct {

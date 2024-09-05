@@ -1,4 +1,4 @@
-module go-util
+module github.com/koleter/go-util
 
 go 1.22.6
 

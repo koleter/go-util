@@ -1,7 +1,7 @@
 package lock
 
 import (
-	"go-util/g"
+	"github.com/koleter/go-util/g"
 	"runtime"
 	"sync/atomic"
 	"unsafe"
