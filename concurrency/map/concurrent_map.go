@@ -92,7 +92,7 @@ func (t *threadSafeMap[K, V]) Range(f func(key K, val V) bool) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	for k, v := range t.raw_map {
-		if f(k, v) {
+		if !f(k, v) {
 			return
 		}
 	}

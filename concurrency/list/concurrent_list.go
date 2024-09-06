@@ -46,7 +46,7 @@ func (tsl *threadSafeList[T]) Range(f func(int, T) bool) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	for i, t := range tsl.list {
-		if f(i, t) {
+		if !f(i, t) {
 			return
 		}
 	}
@@ -65,7 +65,7 @@ func (tsl *threadSafeList[T]) Contain(f func(int, T) bool) bool {
 }
 
 func (tsl *threadSafeList[T]) Filter(f func(int, T) bool) []T {
-	ret := []T{}
+	var ret []T
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	for i, t := range tsl.list {

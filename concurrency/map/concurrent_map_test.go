@@ -1,7 +1,6 @@
 package _map
 
 import (
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"sort"
 	"sync"
@@ -26,11 +25,6 @@ func TestThreadSafeMap_concurrent_safe(t *testing.T) {
 		wg.Done()
 	}()
 
-	go func() {
-		for {
-			fmt.Printf("len is : %d\n", safeMap.Len())
-		}
-	}()
 	wg.Wait()
 	assert.Equal(t, 20000, safeMap.Len())
 }
@@ -44,7 +38,7 @@ func TestThreadSafeMap_Reentrant(t *testing.T) {
 		if key == 3 {
 			safeMap.Delete(key)
 		}
-		return false
+		return true
 	})
 	assert.Equal(t, 4, safeMap.Len())
 	_, b := safeMap.Get(3)
@@ -65,7 +59,7 @@ func TestThreadSafeMap_Delete_when_Range(t *testing.T) {
 		} else {
 			safeMap.Delete(key)
 		}
-		return false
+		return true
 	})
 	sort.Ints(visited)
 	var expect []int
