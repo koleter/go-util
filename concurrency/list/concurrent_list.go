@@ -37,6 +37,19 @@ func (tsl *threadSafeList[T]) Remove(index int) T {
 	return removed
 }
 
+func (tsl *threadSafeList[T]) RemoveFunc(f func(t T) bool) []T {
+	var res []T
+	tsl.lock.Lock()
+	defer tsl.lock.Unlock()
+	for i := len(tsl.list) - 1; i >= 0; i-- {
+		if f(tsl.list[i]) {
+			res = append(res, tsl.list[i])
+			tsl.list = append(tsl.list[:i], tsl.list[i+1:]...)
+		}
+	}
+	return res
+}
+
 // Len 返回列表长度
 func (tsl *threadSafeList[T]) Len() int {
 	return len(tsl.list)

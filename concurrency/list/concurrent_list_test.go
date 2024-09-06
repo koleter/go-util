@@ -87,3 +87,25 @@ func TestThreadSafeList_Sort(t *testing.T) {
 		assert.True(t, safeList.Get(i-1) < safeList.Get(i))
 	}
 }
+
+func TestThreadSafeList_RemoveFunc(t *testing.T) {
+	safeList := NewThreadSafeList([]int{})
+	total := 10
+	for i := 0; i < total; i++ {
+		safeList.Append(i)
+	}
+	assert.True(t, safeList.Contain(func(i int, n int) bool {
+		return n == 4
+	}))
+	var cnt int
+	safeList.RemoveFunc(func(n int) bool {
+		cnt++
+		return n == 4
+	})
+	// Make sure the number of cycles is correct
+	assert.Equal(t, total, cnt)
+	assert.Equal(t, total-1, safeList.Len())
+	assert.False(t, safeList.Contain(func(i int, n int) bool {
+		return n == 4
+	}))
+}
