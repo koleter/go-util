@@ -2,6 +2,7 @@ package list
 
 import (
 	"github.com/stretchr/testify/assert"
+	"math/rand"
 	"testing"
 )
 
@@ -69,4 +70,20 @@ func Test_threadSafeList_Remove(t *testing.T) {
 	assert.False(t, safeList.Contain(func(i int, val int) bool {
 		return val == 2
 	}))
+}
+
+func TestThreadSafeList_Sort(t *testing.T) {
+	safeList := NewThreadSafeList([]int{})
+	total := 10
+	for i := 0; i < total; i++ {
+		safeList.Append(rand.Int())
+	}
+	safeList.Sort(func(i, j int) bool {
+		i1 := safeList.Get(i)
+		i2 := safeList.Get(j)
+		return i1 < i2
+	})
+	for i := 1; i < total; i++ {
+		assert.True(t, safeList.Get(i-1) < safeList.Get(i))
+	}
 }

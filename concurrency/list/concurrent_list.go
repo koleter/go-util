@@ -2,6 +2,7 @@ package list
 
 import (
 	"github.com/koleter/go-util/concurrency/lock"
+	"sort"
 )
 
 type threadSafeList[T any] struct {
@@ -79,4 +80,10 @@ func (tsl *threadSafeList[T]) Clear() {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	tsl.list = tsl.list[:0]
+}
+
+func (tsl *threadSafeList[T]) Sort(f func(i, j int) bool) {
+	tsl.lock.Lock()
+	defer tsl.lock.Unlock()
+	sort.Slice(tsl.list, f)
 }
