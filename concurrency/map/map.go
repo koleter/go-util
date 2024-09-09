@@ -10,4 +10,5 @@ type Map[K comparable, V any] interface {
 	Keys() []K
 	Values() []V
 	Range(f func(key K, val V) bool)
+	Len() int
 }
