@@ -5,10 +5,11 @@ import (
 	"sort"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestThreadSafeMap_concurrent_safe(t *testing.T) {
-	safeMap := NewThreadSafeMap(map[int]int{})
+	var safeMap ConcurrentMap[int, int] = NewThreadSafeMap(map[int]int{})
 	var wg sync.WaitGroup
 	wg.Add(2)
 	go func() {
@@ -70,4 +71,31 @@ func TestThreadSafeMap_Delete_when_Range(t *testing.T) {
 	}
 	assert.Equal(t, total/2, len(visited))
 	assert.Equal(t, expect, visited)
+}
+
+func TestThreadSafeMap_WithLock(t *testing.T) {
+	safeMap := NewThreadSafeMap(map[int]int{})
+	loop := true
+	go func() {
+		for loop {
+			safeMap.WithLock(func() {
+				safeMap.Put(1, 2)
+				get, _ := safeMap.Get(1)
+				assert.Equal(t, 2, get)
+			})
+		}
+	}()
+
+	go func() {
+		for loop {
+			safeMap.WithLock(func() {
+				safeMap.Put(1, 3)
+				get, _ := safeMap.Get(1)
+				assert.Equal(t, 3, get)
+			})
+		}
+	}()
+
+	time.Sleep(5 * time.Second)
+	loop = false
 }

@@ -4,10 +4,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
+	"time"
 )
 
 func Test_threadSafeList_Append(t *testing.T) {
-	safeList := NewThreadSafeList([]int{})
+	var safeList ConcurrentList[int] = NewThreadSafeList([]int{})
 	total := 3
 	for i := 0; i < total; i++ {
 		safeList.Append(i)
@@ -108,4 +109,44 @@ func TestThreadSafeList_RemoveFunc(t *testing.T) {
 	assert.False(t, safeList.Contain(func(i int, n int) bool {
 		return n == 4
 	}))
+}
+
+func TestThreadSafeList_Set(t *testing.T) {
+	safeList := NewThreadSafeList([]int{})
+	safeList.Append(5)
+	assert.Equal(t, 5, safeList.Get(0))
+	assert.Equal(t, 1, safeList.Len())
+	oldVal := safeList.Set(0, 9)
+	assert.Equal(t, 5, oldVal)
+	assert.Equal(t, 9, safeList.Get(0))
+}
+
+func TestThreadSafeList_WithLock(t *testing.T) {
+	safeList := NewThreadSafeList([]int{})
+	safeList.Append(1)
+	loop := true
+	go func() {
+		for loop {
+			safeList.WithLock(func() {
+				a := 1
+				safeList.Set(0, a)
+				get := safeList.Get(0)
+				assert.Equal(t, a, get)
+			})
+		}
+	}()
+
+	go func() {
+		for loop {
+			safeList.WithLock(func() {
+				a := 2
+				safeList.Set(0, a)
+				get := safeList.Get(0)
+				assert.Equal(t, a, get)
+			})
+		}
+	}()
+
+	time.Sleep(5 * time.Second)
+	loop = false
 }

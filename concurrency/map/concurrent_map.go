@@ -19,6 +19,12 @@ func NewThreadSafeMap[K comparable, V any](raw_map map[K]V) *threadSafeMap[K, V]
 	}
 }
 
+func (t *threadSafeMap[K, V]) WithLock(f func()) {
+	t.lock.Lock()
+	defer t.lock.Unlock()
+	f()
+}
+
 func (t *threadSafeMap[K, V]) Put(key K, val V) V {
 	t.lock.Lock()
 	defer t.lock.Unlock()

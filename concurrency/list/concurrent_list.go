@@ -17,6 +17,12 @@ func NewThreadSafeList[T any](l []T) *threadSafeList[T] {
 	}
 }
 
+func (tsl *threadSafeList[T]) WithLock(f func()) {
+	tsl.lock.Lock()
+	defer tsl.lock.Unlock()
+	f()
+}
+
 func (tsl *threadSafeList[T]) Append(element ...T) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
@@ -27,6 +33,14 @@ func (tsl *threadSafeList[T]) Get(i int) T {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	return tsl.list[i]
+}
+
+func (tsl *threadSafeList[T]) Set(i int, element T) T {
+	tsl.lock.Lock()
+	defer tsl.lock.Unlock()
+	old := tsl.list[i]
+	tsl.list[i] = element
+	return old
 }
 
 func (tsl *threadSafeList[T]) Remove(index int) T {

@@ -1,5 +1,7 @@
 package _map
 
+import "github.com/koleter/go-util/concurrency/lock"
+
 type Map[K comparable, V any] interface {
 	Put(key K, val V) V
 	PutAll(m map[K]V)
@@ -11,4 +13,9 @@ type Map[K comparable, V any] interface {
 	Values() []V
 	Range(f func(key K, val V) bool)
 	Len() int
+}
+
+type ConcurrentMap[K comparable, V any] interface {
+	lock.Locker
+	Map[K, V]
 }
