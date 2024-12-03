@@ -150,3 +150,11 @@ func TestThreadSafeList_WithLock(t *testing.T) {
 	time.Sleep(5 * time.Second)
 	loop = false
 }
+
+func TestThreadSafeList_AliasType(t *testing.T) {
+	type Slice []int
+	safeList := NewThreadSafeList(Slice{})
+	safeList.Append(2)
+	assert.Equal(t, 1, safeList.Len())
+	assert.Equal(t, 2, safeList.Get(0))
+}

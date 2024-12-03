@@ -1,6 +1,6 @@
 module github.com/koleter/go-util
 
-go 1.22.6
+go 1.19
 
 require github.com/stretchr/testify v1.9.0
 
