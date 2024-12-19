@@ -4,28 +4,28 @@ import (
 	"github.com/koleter/go-util/concurrency/lock"
 )
 
-type threadSafeMap[K comparable, V any] struct {
+type ThreadSafeMap[K comparable, V any] struct {
 	lock    *lock.ReentrantMutex
 	raw_map map[K]V
 }
 
-func NewThreadSafeMap[K comparable, V any](raw_map map[K]V) *threadSafeMap[K, V] {
+func NewThreadSafeMap[K comparable, V any](raw_map map[K]V) *ThreadSafeMap[K, V] {
 	if raw_map == nil {
-		panic("can not use nil map to new threadSafeMap")
+		panic("can not use nil map to new ThreadSafeMap")
 	}
-	return &threadSafeMap[K, V]{
+	return &ThreadSafeMap[K, V]{
 		lock:    new(lock.ReentrantMutex),
 		raw_map: raw_map,
 	}
 }
 
-func (t *threadSafeMap[K, V]) WithLock(f func()) {
+func (t *ThreadSafeMap[K, V]) WithLock(f func()) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	f()
 }
 
-func (t *threadSafeMap[K, V]) Put(key K, val V) V {
+func (t *ThreadSafeMap[K, V]) Put(key K, val V) V {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	v := t.raw_map[key]
@@ -33,7 +33,7 @@ func (t *threadSafeMap[K, V]) Put(key K, val V) V {
 	return v
 }
 
-func (t *threadSafeMap[K, V]) PutAll(m map[K]V) {
+func (t *ThreadSafeMap[K, V]) PutAll(m map[K]V) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	for k, v := range m {
@@ -42,7 +42,7 @@ func (t *threadSafeMap[K, V]) PutAll(m map[K]V) {
 }
 
 // PutIfAbsent 只有不存在相同的key时才会保存
-func (t *threadSafeMap[K, V]) PutIfAbsent(key K, val V) V {
+func (t *ThreadSafeMap[K, V]) PutIfAbsent(key K, val V) V {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	v, ok := t.raw_map[key]
@@ -52,21 +52,21 @@ func (t *threadSafeMap[K, V]) PutIfAbsent(key K, val V) V {
 	return v
 }
 
-func (t *threadSafeMap[K, V]) Get(key K) (V, bool) {
+func (t *ThreadSafeMap[K, V]) Get(key K) (V, bool) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	val, ok := t.raw_map[key]
 	return val, ok
 }
 
-func (t *threadSafeMap[K, V]) Delete(key K) {
+func (t *ThreadSafeMap[K, V]) Delete(key K) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	delete(t.raw_map, key)
 }
 
 // Clear 清空
-func (t *threadSafeMap[K, V]) Clear() {
+func (t *ThreadSafeMap[K, V]) Clear() {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	for k, _ := range t.raw_map {
@@ -74,7 +74,7 @@ func (t *threadSafeMap[K, V]) Clear() {
 	}
 }
 
-func (t *threadSafeMap[K, V]) Keys() []K {
+func (t *ThreadSafeMap[K, V]) Keys() []K {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	ret := make([]K, 0, len(t.raw_map))
@@ -84,7 +84,7 @@ func (t *threadSafeMap[K, V]) Keys() []K {
 	return ret
 }
 
-func (t *threadSafeMap[K, V]) Values() []V {
+func (t *ThreadSafeMap[K, V]) Values() []V {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	ret := make([]V, 0, len(t.raw_map))
@@ -94,7 +94,7 @@ func (t *threadSafeMap[K, V]) Values() []V {
 	return ret
 }
 
-func (t *threadSafeMap[K, V]) Range(f func(key K, val V) bool) {
+func (t *ThreadSafeMap[K, V]) Range(f func(key K, val V) bool) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 	for k, v := range t.raw_map {
@@ -104,6 +104,6 @@ func (t *threadSafeMap[K, V]) Range(f func(key K, val V) bool) {
 	}
 }
 
-func (t *threadSafeMap[K, V]) Len() int {
+func (t *ThreadSafeMap[K, V]) Len() int {
 	return len(t.raw_map)
 }

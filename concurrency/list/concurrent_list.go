@@ -5,37 +5,37 @@ import (
 	"sort"
 )
 
-type threadSafeList[T any] struct {
+type ThreadSafeList[T any] struct {
 	lock *lock.ReentrantMutex
 	list []T
 }
 
-func NewThreadSafeList[T any](l []T) *threadSafeList[T] {
-	return &threadSafeList[T]{
+func NewThreadSafeList[T any](l []T) *ThreadSafeList[T] {
+	return &ThreadSafeList[T]{
 		lock: new(lock.ReentrantMutex),
 		list: l,
 	}
 }
 
-func (tsl *threadSafeList[T]) WithLock(f func()) {
+func (tsl *ThreadSafeList[T]) WithLock(f func()) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	f()
 }
 
-func (tsl *threadSafeList[T]) Append(element ...T) {
+func (tsl *ThreadSafeList[T]) Append(element ...T) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	tsl.list = append(tsl.list, element...)
 }
 
-func (tsl *threadSafeList[T]) Get(i int) T {
+func (tsl *ThreadSafeList[T]) Get(i int) T {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	return tsl.list[i]
 }
 
-func (tsl *threadSafeList[T]) Set(i int, element T) T {
+func (tsl *ThreadSafeList[T]) Set(i int, element T) T {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	old := tsl.list[i]
@@ -43,7 +43,7 @@ func (tsl *threadSafeList[T]) Set(i int, element T) T {
 	return old
 }
 
-func (tsl *threadSafeList[T]) Remove(index int) T {
+func (tsl *ThreadSafeList[T]) Remove(index int) T {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	removed := tsl.list[index]
@@ -51,7 +51,7 @@ func (tsl *threadSafeList[T]) Remove(index int) T {
 	return removed
 }
 
-func (tsl *threadSafeList[T]) RemoveFunc(f func(t T) bool) []T {
+func (tsl *ThreadSafeList[T]) RemoveFunc(f func(t T) bool) []T {
 	var res []T
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
@@ -65,11 +65,11 @@ func (tsl *threadSafeList[T]) RemoveFunc(f func(t T) bool) []T {
 }
 
 // Len 返回列表长度
-func (tsl *threadSafeList[T]) Len() int {
+func (tsl *ThreadSafeList[T]) Len() int {
 	return len(tsl.list)
 }
 
-func (tsl *threadSafeList[T]) Range(f func(int, T) bool) {
+func (tsl *ThreadSafeList[T]) Range(f func(int, T) bool) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	for i, t := range tsl.list {
@@ -80,7 +80,7 @@ func (tsl *threadSafeList[T]) Range(f func(int, T) bool) {
 }
 
 // Contain 是否存在满足要求的元素
-func (tsl *threadSafeList[T]) Contain(f func(int, T) bool) bool {
+func (tsl *ThreadSafeList[T]) Contain(f func(int, T) bool) bool {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	for i, t := range tsl.list {
@@ -91,7 +91,7 @@ func (tsl *threadSafeList[T]) Contain(f func(int, T) bool) bool {
 	return false
 }
 
-func (tsl *threadSafeList[T]) Filter(f func(int, T) bool) []T {
+func (tsl *ThreadSafeList[T]) Filter(f func(int, T) bool) []T {
 	var ret []T
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
@@ -103,13 +103,13 @@ func (tsl *threadSafeList[T]) Filter(f func(int, T) bool) []T {
 	return ret
 }
 
-func (tsl *threadSafeList[T]) Clear() {
+func (tsl *ThreadSafeList[T]) Clear() {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	tsl.list = tsl.list[:0]
 }
 
-func (tsl *threadSafeList[T]) Sort(f func(i, j int) bool) {
+func (tsl *ThreadSafeList[T]) Sort(f func(i, j int) bool) {
 	tsl.lock.Lock()
 	defer tsl.lock.Unlock()
 	sort.Slice(tsl.list, f)
