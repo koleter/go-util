@@ -100,7 +100,7 @@ func TestTrie_InsertMultiTimes(t *testing.T) {
 	trie.Insert("dog", 2)
 	search, _ := trie.Search("dog")
 	assert.Equal(t, 2, search)
-	trie.Insert("dog", 2)
+	trie.Insert("dog", 20)
 	search, _ = trie.Search("dog")
-	assert.Equal(t, 2, search)
+	assert.Equal(t, 20, search)
 }
