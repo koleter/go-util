@@ -94,3 +94,13 @@ func TestTrie_MatchAllBytes(t *testing.T) {
 	all := trie.MatchAllBytes([]byte("doghouse so big"))
 	assert.Equal(t, []int{2, 20}, all)
 }
+
+func TestTrie_InsertMultiTimes(t *testing.T) {
+	trie := NewTrie[int]()
+	trie.Insert("dog", 2)
+	search, _ := trie.Search("dog")
+	assert.Equal(t, 2, search)
+	trie.Insert("dog", 2)
+	search, _ = trie.Search("dog")
+	assert.Equal(t, 2, search)
+}
