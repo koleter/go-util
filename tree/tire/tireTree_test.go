@@ -59,11 +59,13 @@ func TestTrie_MatchLast(t *testing.T) {
 	trie := NewTrie[int]()
 	trie.Insert("hello", 1)
 	trie.Insert("hello world", 2)
-	last, _ := trie.MatchLast("hello zhangsan")
+	last, exist := trie.MatchLast("hello zhangsan")
 	assert.Equal(t, 1, last)
-	last, _ = trie.MatchLast("hello world!!!!!")
+	assert.True(t, exist)
+	last, exist = trie.MatchLast("hello world!!!!!")
 	assert.Equal(t, 2, last)
-	_, exist := trie.MatchLast("aaa")
+	assert.True(t, exist)
+	_, exist = trie.MatchLast("aaa")
 	assert.False(t, exist)
 }
 
@@ -71,11 +73,13 @@ func TestTrie_MatchLastBytes(t *testing.T) {
 	trie := NewTrie[int]()
 	trie.Insert("hello", 1)
 	trie.Insert("hello world", 2)
-	last, _ := trie.MatchLastBytes([]byte("hello zhangsan"))
+	last, exist := trie.MatchLastBytes([]byte("hello"))
 	assert.Equal(t, 1, last)
-	last, _ = trie.MatchLastBytes([]byte("hello world!!!!!"))
+	assert.True(t, exist)
+	last, exist = trie.MatchLastBytes([]byte("hello world!!!!!"))
 	assert.Equal(t, 2, last)
-	_, exist := trie.MatchLastBytes([]byte("aaa"))
+	assert.True(t, exist)
+	_, exist = trie.MatchLastBytes([]byte("aaa"))
 	assert.False(t, exist)
 }
 

@@ -91,18 +91,20 @@ func (t *Trie[T]) MatchLast(text string) (T, bool) {
 func (t *Trie[T]) MatchLastBytes(word []byte) (T, bool) {
 	node := t.root
 	var res T
+	exist := false
 	for _, char := range word {
 		nextNode := node.children[char]
 		if nextNode != nil {
 			if nextNode.isEnd {
 				res = nextNode.val
+				exist = true
 			}
 			node = nextNode
 		} else {
-			return res, false
+			return res, exist
 		}
 	}
-	return res, false
+	return res, exist
 }
 
 // MatchAll 根据给定的text获取所有可匹配的val
