@@ -32,7 +32,7 @@ func NewRoutinePool(workerNum int) *RoutinePool {
 	return pool
 }
 
-// Stop 停止并等待所有任务完成
+// Stop 停止协程池不再接收新任务
 func (p *RoutinePool) Stop() {
 	if p.stopped {
 		return

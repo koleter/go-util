@@ -1,7 +1,6 @@
 package coroutine
 
 import (
-	"sync"
 	"testing"
 	"time"
 )
@@ -24,18 +23,14 @@ func TestNewRoutinePool_ZeroOrNegativeWorkerNum_Panic(t *testing.T) {
 
 func TestStop_WithTasks_Completes(t *testing.T) {
 	pool := NewRoutinePool(2)
-	var wg sync.WaitGroup
-	wg.Add(2)
 	pool.Submit(func() {
-		defer wg.Done()
 		time.Sleep(100 * time.Millisecond)
 	})
 	pool.Submit(func() {
-		defer wg.Done()
 		time.Sleep(100 * time.Millisecond)
 	})
 	pool.Stop()
-	wg.Wait()
+	pool.Wait()
 }
 
 func TestStop_WithoutTasks_Completes(t *testing.T) {
@@ -54,11 +49,10 @@ func TestSubmit_WhenStopped_IgnoresTask(t *testing.T) {
 
 func TestWorker_ExecutesTasks(t *testing.T) {
 	pool := NewRoutinePool(1)
-	var wg sync.WaitGroup
-	wg.Add(1)
+
 	pool.Submit(func() {
-		defer wg.Done()
+
 	})
-	wg.Wait()
 	pool.Stop()
+	pool.Wait()
 }
