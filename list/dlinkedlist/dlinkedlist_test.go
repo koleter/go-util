@@ -60,6 +60,21 @@ func TestNode_Remove(t *testing.T) {
 	}
 }
 
+func TestNode_Remove_All(t *testing.T) {
+	d := DoublyLinkedList[int]{}
+	for i := 0; i < 10; i++ {
+		d.PushBack(i)
+	}
+
+	removed := 0
+	for node := d.Head(); node != nil; node = node.Next() {
+		assert.Equal(t, 10-removed, d.Len())
+		d.Remove(node)
+		removed++
+	}
+	assert.Equal(t, 0, d.Len())
+}
+
 func TestNode_Remove_one_element_list(t *testing.T) {
 	d := DoublyLinkedList[int]{}
 
