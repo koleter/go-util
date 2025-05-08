@@ -9,7 +9,9 @@ import (
 func TestDoublyLinkedList_PopBack(t *testing.T) {
 	d := DoublyLinkedList[int]{}
 	d.PushFront(3)
+	assert.Equal(t, 1, d.Len())
 	d.PushBack(2)
+	assert.Equal(t, 2, d.Len())
 	back, exist := d.PopBack()
 	assert.True(t, exist)
 	assert.Equal(t, 2, back)
