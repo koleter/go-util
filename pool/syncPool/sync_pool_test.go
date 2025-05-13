@@ -32,10 +32,12 @@ func TestNewSyncPool_not_same_pool_when_Generics_type_is_not_same(t *testing.T) 
 
 func TestSyncPool_Get_reuse_object(t *testing.T) {
 	syncPool := NewSyncPool[int]()
-	get := syncPool.Get()
-	first := fmt.Sprintf("%p", get)
-	syncPool.Put(get)
-	get = syncPool.Get()
-	second := fmt.Sprintf("%p", get)
+	firstGet := syncPool.Get()
+	*firstGet = 4
+	first := fmt.Sprintf("%p", firstGet)
+	syncPool.Put(firstGet)
+	secondGet := syncPool.Get()
+	second := fmt.Sprintf("%p", secondGet)
 	assert.Equal(t, first, second)
+	assert.Equal(t, *firstGet, *secondGet)
 }
