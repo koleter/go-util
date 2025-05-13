@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-// SyncPool 对sync.Pool进行的封装, 使用如果是相同类型, 使用的sync.Pool是一样的
+// SyncPool 对sync.Pool进行的封装, 使用如果是相同类型, 会使用相同的sync.Pool
 type SyncPool[T any] struct {
 	pool sync.Pool
 }
