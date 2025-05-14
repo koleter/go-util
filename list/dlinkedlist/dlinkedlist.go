@@ -20,6 +20,12 @@ type DoublyLinkedList[T any] struct {
 	size       int
 }
 
+func (l *DoublyLinkedList[T]) Clear() {
+	l.size = 0
+	l.head = nil
+	l.tail = nil
+}
+
 func (l *DoublyLinkedList[T]) Head() *Node[T] {
 	return l.head
 }
