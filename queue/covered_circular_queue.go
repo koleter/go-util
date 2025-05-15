@@ -9,8 +9,8 @@ type CoveredCircularQueue[T any] struct {
 	capacity int // 总容量
 }
 
-// NewCircularQueue 创建一个新的循环队列
-func NewCircularQueue[T any](capacity int) *CoveredCircularQueue[T] {
+// NewCoveredCircularQueue 创建一个新的循环队列
+func NewCoveredCircularQueue[T any](capacity int) *CoveredCircularQueue[T] {
 	return &CoveredCircularQueue[T]{
 		data:     make([]T, capacity),
 		front:    0,

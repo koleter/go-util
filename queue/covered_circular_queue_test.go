@@ -7,14 +7,14 @@ import (
 )
 
 func TestNewCircularQueue(t *testing.T) {
-	q := NewCircularQueue[int](5)
+	q := NewCoveredCircularQueue[int](5)
 	if q.capacity != 5 || q.size != 0 || q.front != 0 || q.rear != 0 {
-		t.Errorf("NewCircularQueue 初始化失败: %+v", q)
+		t.Errorf("NewCoveredCircularQueue 初始化失败: %+v", q)
 	}
 }
 
 func TestEnqueue(t *testing.T) {
-	q := NewCircularQueue[int](3)
+	q := NewCoveredCircularQueue[int](3)
 
 	q.Enqueue(1)
 	q.Enqueue(2)
@@ -36,7 +36,7 @@ func TestEnqueue(t *testing.T) {
 }
 
 func TestDequeue(t *testing.T) {
-	q := NewCircularQueue[string](3)
+	q := NewCoveredCircularQueue[string](3)
 	q.Enqueue("a")
 	q.Enqueue("b")
 	q.Enqueue("c")
@@ -63,7 +63,7 @@ func TestDequeue(t *testing.T) {
 }
 
 func TestIsEmpty(t *testing.T) {
-	q := NewCircularQueue[int](2)
+	q := NewCoveredCircularQueue[int](2)
 	if !q.IsEmpty() {
 		t.Errorf("IsEmpty: 初始化应为空")
 	}
@@ -80,7 +80,7 @@ func TestIsEmpty(t *testing.T) {
 }
 
 func TestIsFull(t *testing.T) {
-	q := NewCircularQueue[int](2)
+	q := NewCoveredCircularQueue[int](2)
 	if q.IsFull() {
 		t.Errorf("IsFull: 初始化不应为满")
 	}
@@ -97,7 +97,7 @@ func TestIsFull(t *testing.T) {
 }
 
 func TestSizeAndCapacity(t *testing.T) {
-	q := NewCircularQueue[int](5)
+	q := NewCoveredCircularQueue[int](5)
 	if q.Capacity() != 5 {
 		t.Errorf("Capacity: 期望 5")
 	}
@@ -117,7 +117,7 @@ func TestSizeAndCapacity(t *testing.T) {
 }
 
 func TestRange(t *testing.T) {
-	q := NewCircularQueue[int](3)
+	q := NewCoveredCircularQueue[int](3)
 	q.Enqueue(10)
 	q.Enqueue(20)
 	q.Enqueue(30)
@@ -135,7 +135,7 @@ func TestRange(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	q := NewCircularQueue[int](3)
+	q := NewCoveredCircularQueue[int](3)
 	q.Enqueue(10)
 	q.Enqueue(20)
 	q.Enqueue(30)
