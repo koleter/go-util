@@ -2,14 +2,22 @@ package rbtree
 
 import (
 	"fmt"
-	"github.com/koleter/go-util/compare"
 	"github.com/koleter/go-util/util"
 )
 
-type RBTree[K compare.Comparator[K], V any] struct {
+type RBTree[K, V any] struct {
 	root *Node[K, V]
 	size int
-	zero V
+	cmp  func(K, K) int
+}
+
+func NewRBTree[K, V any](cmp func(K, K) int) *RBTree[K, V] {
+	if cmp == nil {
+		panic("cmp is nil")
+	}
+	return &RBTree[K, V]{
+		cmp: cmp,
+	}
 }
 
 const (
@@ -17,23 +25,23 @@ const (
 	black = true
 )
 
-type Node[K compare.Comparator[K], V any] struct {
+type Node[K, V any] struct {
 	left   *Node[K, V]
 	right  *Node[K, V]
 	parent *Node[K, V]
 	color  bool
-	key    K
-	value  V
+	Key    K
+	Value  V
 }
 
-func newNode[K compare.Comparator[K], V any](key K, value V, parent *Node[K, V]) *Node[K, V] {
+func newNode[K, V any](key K, value V, parent *Node[K, V]) *Node[K, V] {
 	return &Node[K, V]{
 		left:   nil,
 		right:  nil,
 		parent: parent,
 		color:  red,
-		key:    key,
-		value:  value,
+		Key:    key,
+		Value:  value,
 	}
 }
 
@@ -75,7 +83,7 @@ func (node *Node[K, V]) Prev() *Node[K, V] {
 	return p
 }
 
-func colorOf[K compare.Comparator[K], V any](node *Node[K, V]) bool {
+func colorOf[K, V any](node *Node[K, V]) bool {
 	if node == nil {
 		return black
 	}
@@ -170,23 +178,9 @@ func (t *RBTree[K, V]) afterInsert(node *Node[K, V]) {
 	t.root.color = black
 }
 
-func (t *RBTree[K, V]) successor(node *Node[K, V]) *Node[K, V] {
-	if node == nil {
-		return nil
-	}
-	if node.right == nil {
-		return node
-	}
-	right := node.right
-	for right.left != nil {
-		right = right.left
-	}
-	return right
-}
-
 func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 	if util.IsNil(key) {
-		panic("key is a null pointer")
+		panic("Key is a null pointer")
 	}
 	if t.root == nil {
 		t.root = &Node[K, V]{
@@ -194,8 +188,8 @@ func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 			right:  nil,
 			parent: nil,
 			color:  black,
-			key:    key,
-			value:  value,
+			Key:    key,
+			Value:  value,
 		}
 		t.size = 1
 		return t.root
@@ -204,18 +198,18 @@ func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 	var parent *Node[K, V]
 	for node != nil {
 		parent = node
-		cmp := node.key.Compare(key)
+		cmp := t.cmp(node.Key, key)
 		if cmp < 0 {
 			node = node.right
 		} else if cmp == 0 {
-			node.value = value
+			node.Value = value
 			return node
 		} else {
 			node = node.left
 		}
 	}
 	n := newNode(key, value, parent)
-	if parent.key.Compare(key) > 0 {
+	if t.cmp(parent.Key, key) > 0 {
 		parent.left = n
 	} else {
 		parent.right = n
@@ -230,18 +224,33 @@ func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 */
 func (t *RBTree[K, V]) deleteNode(node *Node[K, V]) {
 	t.size--
-	temp := t.successor(node) //找到后继节点
-	node.key = temp.key
-	node.value = temp.value
+
+	// 最终会被删除的节点
+	var temp *Node[K, V]
+	// 向下一直找到叶子结点或者只有一个叶子结点的父节点
+	if node.right == nil {
+		temp = node
+	} else {
+		right := node.right
+		for right.left != nil {
+			right = right.left
+		}
+		temp = right
+	}
+
+	node.Key = temp.Key
+	node.Value = temp.Value
 
 	if temp == t.root { //如果被删除的是根节点
 		if t.size == 1 { // 树中有两个节点,表示根节点还有个左孩子,将左孩子设置为根
 			t.root = t.root.left
 			t.root.parent = nil
 			t.root.color = black
+		} else {
+			// 树中无节点了
+			t.root = nil
 		}
-		t.root = nil
-	} else if temp.right != nil { //后继节点存在右子节点
+	} else if temp.right != nil { // 存在右子节点,此时temp为黑色,temp.right为红色,直接让temp.right顶替自己作为父节点的自节点,然后删除temp即可
 		temp.right.color = black
 		if temp == temp.parent.left {
 			temp.parent.left = temp.right
@@ -281,7 +290,7 @@ func (t *RBTree[K, V]) deleteNode(node *Node[K, V]) {
 func (t *RBTree[K, V]) findNodeByKey(key K) *Node[K, V] {
 	node := t.root
 	for node != nil {
-		cmp := node.key.Compare(key)
+		cmp := t.cmp(node.Key, key)
 		if cmp < 0 {
 			node = node.right
 		} else if cmp == 0 {
@@ -378,9 +387,10 @@ func (t *RBTree[K, V]) afterDelete(node *Node[K, V]) {
 func (t *RBTree[K, V]) Get(key K) (V, bool) {
 	node := t.findNodeByKey(key)
 	if node == nil {
-		return t.zero, false
+		var zero V
+		return zero, false
 	}
-	return node.value, true
+	return node.Value, true
 }
 
 /*
@@ -407,7 +417,7 @@ func (t *RBTree[K, V]) check(msg interface{}) {
 			if node.left.parent != node {
 				err("父子节点关系对应错误")
 			}
-			if node.key.Compare(node.left.key) <= 0 {
+			if t.cmp(node.Key, node.left.Key) <= 0 {
 				err(node)
 			}
 			dfs(node.left)
@@ -416,7 +426,7 @@ func (t *RBTree[K, V]) check(msg interface{}) {
 			if node.right.parent != node {
 				err("父子节点关系对应错误")
 			}
-			if node.key.Compare(node.right.key) >= 0 {
+			if t.cmp(node.Key, node.right.Key) >= 0 {
 				err(node)
 			}
 			dfs(node.right)
@@ -431,7 +441,7 @@ func (t *RBTree[K, V]) check(msg interface{}) {
 func (t *RBTree[K, V]) lowerNode(key K) *Node[K, V] {
 	node := t.root
 	for node != nil {
-		cmp := key.Compare(node.key)
+		cmp := t.cmp(key, node.Key)
 		// 节点的key小于当前的key,我们要找到小于等于key中最大的那个节点,所以尝试找right
 		if cmp > 0 {
 			if node.right != nil {
@@ -461,19 +471,20 @@ func (t *RBTree[K, V]) lowerNode(key K) *Node[K, V] {
 	return nil
 }
 
-// Lower find the largest value that is smaller than key
+// Lower find the largest Value that is smaller than Key
 func (t *RBTree[K, V]) Lower(key K) (V, bool) {
 	node := t.lowerNode(key)
 	if node == nil {
-		return t.zero, false
+		var zero V
+		return zero, false
 	}
-	return node.value, true
+	return node.Value, true
 }
 
 func (t *RBTree[K, V]) higherNode(key K) *Node[K, V] {
 	node := t.root
 	for node != nil {
-		cmp := key.Compare(node.key)
+		cmp := t.cmp(key, node.Key)
 		// 节点的key大于当前的key,我们要找到大于等于key中最大的那个节点,所以尝试找left
 		if cmp < 0 {
 			if node.left != nil {
@@ -503,7 +514,30 @@ func (t *RBTree[K, V]) higherNode(key K) *Node[K, V] {
 func (t *RBTree[K, V]) Higher(key K) (V, bool) {
 	node := t.higherNode(key)
 	if node == nil {
-		return t.zero, false
+		var zero V
+		return zero, false
 	}
-	return node.value, true
+	return node.Value, true
+}
+
+func (t *RBTree[K, V]) LowestNode() *Node[K, V] {
+	if t.root == nil {
+		return nil
+	}
+	node := t.root
+	for node.left != nil {
+		node = node.left
+	}
+	return node
+}
+
+func (t *RBTree[K, V]) HighestNode() *Node[K, V] {
+	if t.root == nil {
+		return nil
+	}
+	node := t.root
+	for node.right != nil {
+		node = node.right
+	}
+	return node
 }
