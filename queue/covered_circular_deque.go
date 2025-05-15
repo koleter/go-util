@@ -119,3 +119,17 @@ func (d *CoveredCircularDeque[T]) Range(fn func(T) bool) {
 		}
 	}
 }
+
+// ReverseRange 遍历队列，按逆序执行函数 fn
+func (d *CoveredCircularDeque[T]) ReverseRange(fn func(item T) bool) {
+	if d.IsEmpty() {
+		return
+	}
+
+	for i := d.size - 1; i >= 0; i-- {
+		index := (d.front + i) % d.capacity
+		if !fn(d.data[index]) {
+			return
+		}
+	}
+}

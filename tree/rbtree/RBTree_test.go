@@ -130,26 +130,6 @@ func TestDelete(t *testing.T) {
 	assert.Equal(t, 0, tree.Len())
 }
 
-func TestNextAndPrev(t *testing.T) {
-	tree := NewRBTree[int, string](intCompare)
-	keys := []int{5, 3, 7, 2, 4, 6, 8}
-	for _, k := range keys {
-		tree.Insert(k, fmt.Sprintf("%d", k))
-	}
-
-	node := tree.findNodeByKey(5)
-	assert.Equal(t, 6, node.Next().Key)
-	assert.Equal(t, 4, node.Prev().Key)
-
-	node = tree.findNodeByKey(2)
-	assert.Equal(t, 3, node.Next().Key)
-	assert.Nil(t, node.Prev())
-
-	node = tree.findNodeByKey(8)
-	assert.Nil(t, node.Next())
-	assert.Equal(t, 7, node.Prev().Key)
-}
-
 func TestLowerAndHigher(t *testing.T) {
 	tree := NewRBTree[int, string](intCompare)
 	keys := []int{5, 3, 7, 2, 4, 6, 8}
@@ -242,14 +222,14 @@ func TestDeleteOneChildNode(t *testing.T) {
 	assert.Equal(t, 3, tree.Len())
 }
 
-// 测试 LowestNode 函数
+// 测试 lowestNode 函数
 func TestLowestNode(t *testing.T) {
 	tree := NewRBTree[int, string](intCompare)
-	node := tree.LowestNode()
+	node := tree.lowestNode()
 	assert.Nil(t, node)
 
 	tree.Insert(10, "ten")
-	node = tree.LowestNode()
+	node = tree.lowestNode()
 	assert.Equal(t, 10, node.Key)
 	assert.Equal(t, "ten", node.Value)
 
@@ -258,19 +238,19 @@ func TestLowestNode(t *testing.T) {
 	tree.Insert(2, "two")
 	tree.Insert(7, "seven")
 	tree.Insert(20, "twenty")
-	node = tree.LowestNode()
+	node = tree.lowestNode()
 	assert.Equal(t, 2, node.Key)
 	assert.Equal(t, "two", node.Value)
 }
 
-// 测试 HighestNode 函数
+// 测试 highestNode 函数
 func TestHighestNode(t *testing.T) {
 	tree := NewRBTree[int, string](intCompare)
-	node := tree.HighestNode()
+	node := tree.highestNode()
 	assert.Nil(t, node)
 
 	tree.Insert(10, "ten")
-	node = tree.HighestNode()
+	node = tree.highestNode()
 	assert.Equal(t, 10, node.Key)
 	assert.Equal(t, "ten", node.Value)
 
@@ -279,29 +259,35 @@ func TestHighestNode(t *testing.T) {
 	tree.Insert(2, "two")
 	tree.Insert(7, "seven")
 	tree.Insert(20, "twenty")
-	node = tree.HighestNode()
+	node = tree.highestNode()
 	assert.Equal(t, 20, node.Key)
 	assert.Equal(t, "twenty", node.Value)
 }
 
-// 遍历红黑树
-func TestRange(t *testing.T) {
-	tree := NewRBTree[int, string](intCompare)
-	length := 20
-	for i := 0; i < length; i++ {
-		tree.Insert(i, fmt.Sprintf("%d", i))
+func TestRBTree_Range(t1 *testing.T) {
+	tree := NewRBTree[int, int](intCompare)
+	for i := 0; i < 10; i++ {
+		tree.Insert(i, i)
 	}
-	assert.Equal(t, length, tree.Len())
 
 	var slice []int
-	for node := tree.LowestNode(); node != nil; node = node.Next() {
-		slice = append(slice, node.Key)
-	}
-	assert.Equal(t, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19}, slice)
+	tree.Range(func(key int, value int) bool {
+		slice = append(slice, key)
+		return true
+	})
+	assert.Equal(t1, []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, slice)
+}
 
-	slice = slice[:0]
-	for node := tree.HighestNode(); node != nil; node = node.Prev() {
-		slice = append(slice, node.Key)
+func TestRBTree_ReverseRange(t1 *testing.T) {
+	tree := NewRBTree[int, int](intCompare)
+	for i := 0; i < 10; i++ {
+		tree.Insert(i, i)
 	}
-	assert.Equal(t, []int{19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, slice)
+
+	var slice []int
+	tree.ReverseRange(func(key int, value int) bool {
+		slice = append(slice, key)
+		return true
+	})
+	assert.Equal(t1, []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, slice)
 }

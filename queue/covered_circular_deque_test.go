@@ -194,3 +194,91 @@ func TestRangeEarlyTermination(t *testing.T) {
 		t.Errorf("Expected only 1 iteration, got %d", count)
 	}
 }
+
+// TestReverseRange_NormalTraversal 测试正常遍历所有元素
+func TestReverseRange_NormalTraversal(t *testing.T) {
+	deque := &CoveredCircularDeque[int]{
+		data:     []int{10, 20, 30, 40},
+		front:    0,
+		size:     4,
+		capacity: 4,
+	}
+
+	expected := []int{40, 30, 20, 10}
+	var result []int
+
+	deque.ReverseRange(func(item int) bool {
+		result = append(result, item)
+		return true
+	})
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v", expected, result)
+	}
+}
+
+// TestReverseRange_StopAtSecondElement 测试在第二个元素停止
+func TestReverseRange_StopAtSecondElement(t *testing.T) {
+	deque := &CoveredCircularDeque[int]{
+		data:     []int{10, 20, 30, 40},
+		front:    0,
+		size:     4,
+		capacity: 4,
+	}
+
+	expected := []int{40, 30}
+	var result []int
+
+	deque.ReverseRange(func(item int) bool {
+		result = append(result, item)
+		return len(result) < 2 // stop after second call
+	})
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v", expected, result)
+	}
+}
+
+// TestReverseRange_SingleElement 测试单个元素情况
+func TestReverseRange_SingleElement(t *testing.T) {
+	deque := &CoveredCircularDeque[int]{
+		data:     []int{99},
+		front:    0,
+		size:     1,
+		capacity: 1,
+	}
+
+	expected := []int{99}
+	var result []int
+
+	deque.ReverseRange(func(item int) bool {
+		result = append(result, item)
+		return true
+	})
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v", expected, result)
+	}
+}
+
+// TestReverseRange_CircularBuffer 测试 front 不为零的情况
+func TestReverseRange_CircularBuffer(t *testing.T) {
+	deque := &CoveredCircularDeque[int]{
+		data:     []int{30, 40, 10, 20}, // 实际逻辑上 [10, 20, 30, 40]
+		front:    2,                     // front points to index 2
+		size:     4,
+		capacity: 4,
+	}
+
+	expected := []int{40, 30, 20, 10}
+	var result []int
+
+	deque.ReverseRange(func(item int) bool {
+		result = append(result, item)
+		return true
+	})
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("Expected %v, got %v", expected, result)
+	}
+}

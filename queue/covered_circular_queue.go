@@ -77,3 +77,33 @@ func (q *CoveredCircularQueue[T]) Range(fn func(item T) bool) {
 		}
 	}
 }
+
+// ReverseRange 遍历队列，按逆序执行函数 fn
+func (q *CoveredCircularQueue[T]) ReverseRange(fn func(item T) bool) {
+	if q.IsEmpty() {
+		return
+	}
+
+	for i := q.size - 1; i >= 0; i-- {
+		index := (q.front + i) % q.capacity
+		if !fn(q.data[index]) {
+			return
+		}
+	}
+}
+
+func (q *CoveredCircularQueue[T]) Front() (T, bool) {
+	if q.IsEmpty() {
+		var zero T
+		return zero, false
+	}
+	return q.data[q.front], true
+}
+
+func (q *CoveredCircularQueue[T]) Back() (T, bool) {
+	if q.IsEmpty() {
+		var zero T
+		return zero, false
+	}
+	return q.data[q.rear], true
+}

@@ -9,6 +9,7 @@ type RBTree[K, V any] struct {
 	root *Node[K, V]
 	size int
 	cmp  func(K, K) int
+	mod  int
 }
 
 func NewRBTree[K, V any](cmp func(K, K) int) *RBTree[K, V] {
@@ -43,44 +44,6 @@ func newNode[K, V any](key K, value V, parent *Node[K, V]) *Node[K, V] {
 		Key:    key,
 		Value:  value,
 	}
-}
-
-func (node *Node[K, V]) Next() *Node[K, V] {
-	if node == nil {
-		return nil
-	}
-	if node.right != nil {
-		right := node.right
-		for right.left != nil {
-			right = right.left
-		}
-		return right
-	}
-	p := node.parent
-	for p != nil && p.left != node {
-		node = p
-		p = p.parent
-	}
-	return p
-}
-
-func (node *Node[K, V]) Prev() *Node[K, V] {
-	if node == nil {
-		return nil
-	}
-	if node.left != nil {
-		left := node.left
-		for left.right != nil {
-			left = left.right
-		}
-		return left
-	}
-	p := node.parent
-	for p != nil && p.right != node {
-		node = p
-		p = p.parent
-	}
-	return p
 }
 
 func colorOf[K, V any](node *Node[K, V]) bool {
@@ -182,6 +145,7 @@ func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 	if util.IsNil(key) {
 		panic("Key is a null pointer")
 	}
+	t.mod++
 	if t.root == nil {
 		t.root = &Node[K, V]{
 			left:   nil,
@@ -307,6 +271,7 @@ func (t *RBTree[K, V]) findNodeByKey(key K) *Node[K, V] {
 返回值为true时表示删除成功,为false表示没有这个key的节点
 */
 func (t *RBTree[K, V]) Delete(key K) bool {
+	t.mod++
 	node := t.findNodeByKey(key)
 	if node == nil {
 		return false
@@ -465,7 +430,7 @@ func (t *RBTree[K, V]) lowerNode(key K) *Node[K, V] {
 			}
 
 		} else {
-			return node.Prev()
+			return t.predecessor(node)
 		}
 	}
 	return nil
@@ -505,7 +470,7 @@ func (t *RBTree[K, V]) higherNode(key K) *Node[K, V] {
 			}
 
 		} else {
-			return node.Next()
+			return t.successor(node)
 		}
 	}
 	return nil
@@ -520,7 +485,7 @@ func (t *RBTree[K, V]) Higher(key K) (V, bool) {
 	return node.Value, true
 }
 
-func (t *RBTree[K, V]) LowestNode() *Node[K, V] {
+func (t *RBTree[K, V]) lowestNode() *Node[K, V] {
 	if t.root == nil {
 		return nil
 	}
@@ -531,7 +496,7 @@ func (t *RBTree[K, V]) LowestNode() *Node[K, V] {
 	return node
 }
 
-func (t *RBTree[K, V]) HighestNode() *Node[K, V] {
+func (t *RBTree[K, V]) highestNode() *Node[K, V] {
 	if t.root == nil {
 		return nil
 	}
@@ -540,4 +505,66 @@ func (t *RBTree[K, V]) HighestNode() *Node[K, V] {
 		node = node.right
 	}
 	return node
+}
+
+func (t *RBTree[K, V]) successor(node *Node[K, V]) *Node[K, V] {
+	if node == nil {
+		return nil
+	}
+	if node.right != nil {
+		right := node.right
+		for right.left != nil {
+			right = right.left
+		}
+		return right
+	}
+	p := node.parent
+	for p != nil && p.left != node {
+		node = p
+		p = p.parent
+	}
+	return p
+}
+
+func (t *RBTree[K, V]) predecessor(node *Node[K, V]) *Node[K, V] {
+	if node == nil {
+		return nil
+	}
+	if node.left != nil {
+		left := node.left
+		for left.right != nil {
+			left = left.right
+		}
+		return left
+	}
+	p := node.parent
+	for p != nil && p.right != node {
+		node = p
+		p = p.parent
+	}
+	return p
+}
+
+func (t *RBTree[K, V]) Range(fn func(K, V) bool) {
+	mod := t.mod
+	for node := t.lowestNode(); node != nil; node = t.successor(node) {
+		if mod != t.mod {
+			panic("cannot modify a RBTree while traversing it")
+		}
+		if !fn(node.Key, node.Value) {
+			return
+		}
+	}
+}
+
+func (t *RBTree[K, V]) ReverseRange(fn func(K, V) bool) {
+	mod := t.mod
+	for node := t.highestNode(); node != nil; node = t.predecessor(node) {
+		if mod != t.mod {
+			panic("cannot modify a RBTree while traversing it")
+		}
+		if !fn(node.Key, node.Value) {
+			return
+		}
+	}
 }

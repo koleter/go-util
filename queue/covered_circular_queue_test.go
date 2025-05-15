@@ -153,3 +153,156 @@ func TestRemove(t *testing.T) {
 	n, _ = q.Dequeue()
 	assert.Equal(t, 30, n)
 }
+
+// TestFront_EmptyQueue tests Front() on an empty queue.
+func TestFront_EmptyQueue(t *testing.T) {
+	q := &CoveredCircularQueue[int]{
+		data:     make([]int, 5),
+		front:    0,
+		rear:     -1,
+		size:     0,
+		capacity: 5,
+	}
+
+	val, ok := q.Front()
+	if ok {
+		t.Errorf("expected ok to be false for empty queue")
+	}
+	var zero int
+	if val != zero {
+		t.Errorf("expected value to be zero value for empty queue, got %v", val)
+	}
+}
+
+// TestFront_NonEmptyQueue tests Front() on a non-empty queue.
+func TestFront_NonEmptyQueue(t *testing.T) {
+	q := &CoveredCircularQueue[string]{
+		data:     []string{"a", "b", "c"},
+		front:    0,
+		rear:     2,
+		size:     3,
+		capacity: 3,
+	}
+
+	expected := "a"
+	val, ok := q.Front()
+	if !ok {
+		t.Errorf("expected ok to be true for non-empty queue")
+	}
+	if val != expected {
+		t.Errorf("expected front value %v, got %v", expected, val)
+	}
+}
+
+// TestBack_EmptyQueue tests Back() on an empty queue.
+func TestBack_EmptyQueue(t *testing.T) {
+	q := &CoveredCircularQueue[float64]{
+		data:     make([]float64, 5),
+		front:    0,
+		rear:     -1,
+		size:     0,
+		capacity: 5,
+	}
+
+	val, ok := q.Back()
+	if ok {
+		t.Errorf("expected ok to be false for empty queue")
+	}
+	var zero float64
+	if val != zero {
+		t.Errorf("expected value to be zero value for empty queue, got %v", val)
+	}
+}
+
+// TestBack_NonEmptyQueue tests Back() on a non-empty queue.
+func TestBack_NonEmptyQueue(t *testing.T) {
+	q := &CoveredCircularQueue[int]{
+		data:     []int{10, 20, 30},
+		front:    1,
+		rear:     2,
+		size:     2,
+		capacity: 3,
+	}
+
+	expected := 30
+	val, ok := q.Back()
+	if !ok {
+		t.Errorf("expected ok to be true for non-empty queue")
+	}
+	if val != expected {
+		t.Errorf("expected back value %v, got %v", expected, val)
+	}
+}
+
+// TestReverseRange_EmptyQueue 测试空队列的情况
+func TestReverseRange_EmptyQueue(t *testing.T) {
+	q := &CoveredCircularQueue[int]{
+		data:     make([]int, 4),
+		front:    0,
+		size:     0,
+		capacity: 4,
+	}
+
+	called := false
+	q.ReverseRange(func(item int) bool {
+		called = true
+		return true
+	})
+
+	if called {
+		t.Error("Expected fn not to be called for empty queue")
+	}
+}
+
+// TestReverseRange_AllTrue 测试所有元素都返回 true 的情况
+func TestReverseRange_AllTrue(t *testing.T) {
+	q := &CoveredCircularQueue[int]{
+		data:     make([]int, 4),
+		front:    1,
+		size:     3,
+		capacity: 4,
+	}
+	// 队列内容：索引1 -> 10, 索引2 -> 20, 索引3 -> 30
+	q.data[1] = 10
+	q.data[2] = 20
+	q.data[3] = 30
+
+	var visited []int
+	q.ReverseRange(func(item int) bool {
+		visited = append(visited, item)
+		return true
+	})
+
+	expected := []int{30, 20, 10}
+	if !reflect.DeepEqual(visited, expected) {
+		t.Errorf("Expected visited %v, got %v", expected, visited)
+	}
+}
+
+// TestReverseRange_StopInMiddle 测试在中间返回 false 的情况
+func TestReverseRange_StopInMiddle(t *testing.T) {
+	q := &CoveredCircularQueue[int]{
+		data:     make([]int, 5),
+		front:    2,
+		size:     4,
+		capacity: 5,
+	}
+	// 队列内容：索引2 -> 10, 索引3 -> 20, 索引4 -> 30, 索引0 -> 40
+	q.data[2] = 10
+	q.data[3] = 20
+	q.data[4] = 30
+	q.data[0] = 40
+
+	var visited []int
+	counter := 0
+	q.ReverseRange(func(item int) bool {
+		visited = append(visited, item)
+		counter++
+		return counter < 2 // 第二次调用时返回 false
+	})
+
+	expected := []int{40, 30} // 逆序访问应该是 40 -> 30 -> 20 -> 10，但会在第2次中断
+	if !reflect.DeepEqual(visited, expected) {
+		t.Errorf("Expected visited %v, got %v", expected, visited)
+	}
+}
