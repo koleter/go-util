@@ -7,7 +7,7 @@ import (
 
 // TestNewCircularDeque tests the creation of a new circular deque
 func TestNewCircularDeque(t *testing.T) {
-	deque := NewCircularDeque[int](3)
+	deque := NewCoveredCircularDeque[int](3)
 	if deque == nil {
 		t.Fatal("Expected non-nil deque")
 	}
@@ -24,7 +24,7 @@ func TestNewCircularDeque(t *testing.T) {
 
 // TestPushFront_EmptyQueue tests pushing to front of an empty deque
 func TestPushFront_EmptyQueue(t *testing.T) {
-	deque := NewCircularDeque[int](2)
+	deque := NewCoveredCircularDeque[int](2)
 	deque.PushFront(1)
 
 	if deque.Size() != 1 {
@@ -42,7 +42,7 @@ func TestPushFront_EmptyQueue(t *testing.T) {
 
 // TestPushBack_EmptyQueue tests pushing to back of an empty deque
 func TestPushBack_EmptyQueue(t *testing.T) {
-	deque := NewCircularDeque[int](2)
+	deque := NewCoveredCircularDeque[int](2)
 	deque.PushBack(1)
 
 	if deque.Size() != 1 {
@@ -60,7 +60,7 @@ func TestPushBack_EmptyQueue(t *testing.T) {
 
 // TestPushFront_Overwrite tests pushing to front when deque is full
 func TestPushFront_Overwrite(t *testing.T) {
-	deque := NewCircularDeque[int](2)
+	deque := NewCoveredCircularDeque[int](2)
 	deque.PushBack(1)
 	deque.PushBack(2)
 	deque.PushFront(3) // Should overwrite 2
@@ -79,7 +79,7 @@ func TestPushFront_Overwrite(t *testing.T) {
 
 // TestPushBack_Overwrite tests pushing to back when deque is full
 func TestPushBack_Overwrite(t *testing.T) {
-	deque := NewCircularDeque[int](2)
+	deque := NewCoveredCircularDeque[int](2)
 	deque.PushBack(1)
 	deque.PushFront(2)
 	deque.PushBack(3) // Should overwrite 2
@@ -98,7 +98,7 @@ func TestPushBack_Overwrite(t *testing.T) {
 
 // TestPopFront tests popping from the front of the deque
 func TestPopFront(t *testing.T) {
-	deque := NewCircularDeque[int](3)
+	deque := NewCoveredCircularDeque[int](3)
 	deque.PushBack(1)
 	deque.PushBack(2)
 
@@ -119,7 +119,7 @@ func TestPopFront(t *testing.T) {
 
 // TestPopBack tests popping from the back of the deque
 func TestPopBack(t *testing.T) {
-	deque := NewCircularDeque[int](3)
+	deque := NewCoveredCircularDeque[int](3)
 	deque.PushBack(1)
 	deque.PushBack(2)
 
@@ -140,7 +140,7 @@ func TestPopBack(t *testing.T) {
 
 // TestEdgeCases tests edge cases like empty deque operations and wrapping pointers
 func TestEdgeCases(t *testing.T) {
-	deque := NewCircularDeque[int](2)
+	deque := NewCoveredCircularDeque[int](2)
 
 	// Test operations on empty deque
 	if _, ok := deque.PopFront(); ok {
@@ -179,7 +179,7 @@ func TestEdgeCases(t *testing.T) {
 
 // TestRangeEarlyTermination tests that returning false from range stops iteration
 func TestRangeEarlyTermination(t *testing.T) {
-	deque := NewCircularDeque[int](3)
+	deque := NewCoveredCircularDeque[int](3)
 	deque.PushBack(1)
 	deque.PushBack(2)
 	deque.PushBack(3)

@@ -1,7 +1,7 @@
 package queue
 
-// CircularDeque 基于数组的双向循环队列，支持在满时覆盖旧元素
-type CircularDeque[T any] struct {
+// CoveredCircularDeque 基于数组的双向循环队列，队列满时插入会覆盖队首或者队尾元素
+type CoveredCircularDeque[T any] struct {
 	data     []T
 	front    int // 队头指针（指向第一个元素）
 	rear     int // 队尾指针（指向最后一个元素的下一个位置）
@@ -9,9 +9,9 @@ type CircularDeque[T any] struct {
 	capacity int // 总容量
 }
 
-// NewCircularDeque 创建一个新的双向循环队列
-func NewCircularDeque[T any](capacity int) *CircularDeque[T] {
-	return &CircularDeque[T]{
+// NewCoveredCircularDeque 创建一个新的双向循环队列
+func NewCoveredCircularDeque[T any](capacity int) *CoveredCircularDeque[T] {
+	return &CoveredCircularDeque[T]{
 		data:     make([]T, capacity),
 		front:    0,
 		rear:     0,
@@ -21,27 +21,27 @@ func NewCircularDeque[T any](capacity int) *CircularDeque[T] {
 }
 
 // IsEmpty 是否为空
-func (d *CircularDeque[T]) IsEmpty() bool {
+func (d *CoveredCircularDeque[T]) IsEmpty() bool {
 	return d.size == 0
 }
 
 // IsFull 是否已满
-func (d *CircularDeque[T]) IsFull() bool {
+func (d *CoveredCircularDeque[T]) IsFull() bool {
 	return d.size == d.capacity
 }
 
 // Size 获取当前元素数量
-func (d *CircularDeque[T]) Size() int {
+func (d *CoveredCircularDeque[T]) Size() int {
 	return d.size
 }
 
 // Capacity 获取队列总容量
-func (d *CircularDeque[T]) Capacity() int {
+func (d *CoveredCircularDeque[T]) Capacity() int {
 	return d.capacity
 }
 
 // PushFront 在队头插入元素，若队列满则覆盖最尾部的数据
-func (d *CircularDeque[T]) PushFront(item T) {
+func (d *CoveredCircularDeque[T]) PushFront(item T) {
 	if d.IsFull() {
 		// 覆盖：移动 rear 指针（即丢弃最后元素）
 		d.rear = (d.rear - 1 + d.capacity) % d.capacity
@@ -53,7 +53,7 @@ func (d *CircularDeque[T]) PushFront(item T) {
 }
 
 // PushBack 在队尾插入元素，若队列满则覆盖最头部的数据
-func (d *CircularDeque[T]) PushBack(item T) {
+func (d *CoveredCircularDeque[T]) PushBack(item T) {
 	if d.IsFull() {
 		// 覆盖：移动 front 指针（即丢弃最前元素）
 		d.front = (d.front + 1) % d.capacity
@@ -65,7 +65,7 @@ func (d *CircularDeque[T]) PushBack(item T) {
 }
 
 // PopFront 删除并返回队头元素
-func (d *CircularDeque[T]) PopFront() (T, bool) {
+func (d *CoveredCircularDeque[T]) PopFront() (T, bool) {
 	var zero T
 	if d.IsEmpty() {
 		return zero, false
@@ -77,7 +77,7 @@ func (d *CircularDeque[T]) PopFront() (T, bool) {
 }
 
 // PopBack 删除并返回队尾元素
-func (d *CircularDeque[T]) PopBack() (T, bool) {
+func (d *CoveredCircularDeque[T]) PopBack() (T, bool) {
 	var zero T
 	if d.IsEmpty() {
 		return zero, false
@@ -89,7 +89,7 @@ func (d *CircularDeque[T]) PopBack() (T, bool) {
 }
 
 // Front 获取队头元素
-func (d *CircularDeque[T]) Front() (T, bool) {
+func (d *CoveredCircularDeque[T]) Front() (T, bool) {
 	var zero T
 	if d.IsEmpty() {
 		return zero, false
@@ -98,7 +98,7 @@ func (d *CircularDeque[T]) Front() (T, bool) {
 }
 
 // Back 获取队尾元素
-func (d *CircularDeque[T]) Back() (T, bool) {
+func (d *CoveredCircularDeque[T]) Back() (T, bool) {
 	var zero T
 	if d.IsEmpty() {
 		return zero, false
@@ -108,7 +108,7 @@ func (d *CircularDeque[T]) Back() (T, bool) {
 }
 
 // Range 遍历所有元素，按从 front 到 rear 的顺序执行函数 fn
-func (d *CircularDeque[T]) Range(fn func(T) bool) {
+func (d *CoveredCircularDeque[T]) Range(fn func(T) bool) {
 	if d.IsEmpty() {
 		return
 	}
