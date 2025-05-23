@@ -291,3 +291,10 @@ func TestRBTree_ReverseRange(t1 *testing.T) {
 	})
 	assert.Equal(t1, []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, slice)
 }
+
+func TestRBTree_lowerNode(t1 *testing.T) {
+	tree := NewRBTree[int, int](intCompare)
+	tree.Insert(4, 4)
+	node := tree.lowerNode(2)
+	assert.Nil(t1, node)
+}

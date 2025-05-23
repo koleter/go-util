@@ -405,35 +405,22 @@ func (t *RBTree[K, V]) check(msg interface{}) {
 
 func (t *RBTree[K, V]) lowerNode(key K) *Node[K, V] {
 	node := t.root
+	var lastLess *Node[K, V] // 记录最后一个小于 key 的节点
 	for node != nil {
 		cmp := t.cmp(key, node.Key)
 		// 节点的key小于当前的key,我们要找到小于等于key中最大的那个节点,所以尝试找right
 		if cmp > 0 {
-			if node.right != nil {
-				node = node.right
-			} else {
-				return node
-			}
+			// 当前节点 key 小于目标 key，记录该节点为候选，并向右走
+			lastLess = node
+			node = node.right
 		} else if cmp < 0 {
-			// 节点的key大于当前的key,我们要找到小于等于key中最大的那个节点,所以尝试找比较小的节点
-			if node.left != nil {
-				node = node.left
-			} else {
-				// 没有left,通过左分支向上找比较小的父节点就是答案
-				parent := node.parent
-				// 这里之所以要判断是left分支,是因为确保是从左分支下来的,这样的话父节点必定也是小于key的
-				for parent != nil && parent.left == node {
-					node = parent
-					parent = parent.parent
-				}
-				return parent
-			}
-
+			// 当前节点 key 大于目标 key，向左走
+			node = node.left
 		} else {
 			return t.predecessor(node)
 		}
 	}
-	return nil
+	return lastLess
 }
 
 // Lower find the largest Value that is smaller than Key
@@ -448,32 +435,21 @@ func (t *RBTree[K, V]) Lower(key K) (V, bool) {
 
 func (t *RBTree[K, V]) higherNode(key K) *Node[K, V] {
 	node := t.root
+	var lastHigher *Node[K, V] // 记录最后一个大于 key 的节点
 	for node != nil {
 		cmp := t.cmp(key, node.Key)
-		// 节点的key大于当前的key,我们要找到大于等于key中最大的那个节点,所以尝试找left
+		// 节点的key大于当前的key,我们要找到大于等于key中最小的那个节点,所以尝试找left
 		if cmp < 0 {
-			if node.left != nil {
-				node = node.left
-			} else {
-				return node
-			}
+			lastHigher = node
+			node = node.left
 		} else if cmp > 0 {
-			if node.right != nil {
-				node = node.right
-			} else {
-				parent := node.parent
-				for parent != nil && parent.right == node {
-					node = parent
-					parent = parent.parent
-				}
-				return parent
-			}
-
+			// 当前节点小于当前key
+			node = node.right
 		} else {
 			return t.successor(node)
 		}
 	}
-	return nil
+	return lastHigher
 }
 
 func (t *RBTree[K, V]) Higher(key K) (V, bool) {
