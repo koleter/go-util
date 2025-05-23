@@ -111,21 +111,25 @@ func TestDelete(t *testing.T) {
 	tree.Insert(7, "seven")
 
 	// 删除不存在的key
-	assert.False(t, tree.Delete(10))
+	_, b := tree.Delete(10)
+	assert.False(t, b)
 	assert.Equal(t, 3, tree.Len())
 
 	// 删除叶子节点
-	assert.True(t, tree.Delete(3))
+	_, b = tree.Delete(3)
+	assert.True(t, b)
 	assert.Nil(t, tree.findNodeByKey(3))
 	assert.Equal(t, 2, tree.Len())
 
 	// 删除根节点
-	assert.True(t, tree.Delete(5))
+	_, b = tree.Delete(5)
+	assert.True(t, b)
 	assert.Nil(t, tree.findNodeByKey(5))
 	assert.Equal(t, 1, tree.Len())
 
 	// 删除最后一个节点
-	assert.True(t, tree.Delete(7))
+	_, b = tree.Delete(7)
+	assert.True(t, b)
 	assert.Nil(t, tree.findNodeByKey(7))
 	assert.Equal(t, 0, tree.Len())
 }
@@ -204,7 +208,8 @@ func TestDeleteOneChildNode(t *testing.T) {
 	}
 
 	// 删除有子节点的节点
-	assert.True(t, tree.Delete(7))
+	_, b := tree.Delete(7)
+	assert.True(t, b)
 
 	// 验证删除后的状态
 	val, ok := tree.Get(6)

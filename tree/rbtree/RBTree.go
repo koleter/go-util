@@ -270,14 +270,15 @@ func (t *RBTree[K, V]) findNodeByKey(key K) *Node[K, V] {
 删除红黑树中key节点
 返回值为true时表示删除成功,为false表示没有这个key的节点
 */
-func (t *RBTree[K, V]) Delete(key K) bool {
+func (t *RBTree[K, V]) Delete(key K) (V, bool) {
 	t.mod++
 	node := t.findNodeByKey(key)
 	if node == nil {
-		return false
+		var zero V
+		return zero, false
 	}
 	t.deleteNode(node)
-	return true
+	return node.Value, true
 }
 
 func (t *RBTree[K, V]) afterDelete(node *Node[K, V]) {
