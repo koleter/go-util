@@ -1,4 +1,4 @@
-package tire
+package tree
 
 import (
 	"github.com/stretchr/testify/assert"

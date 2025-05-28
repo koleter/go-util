@@ -1,4 +1,4 @@
-package tire
+package tree
 
 // TrieNode 是字典树的节点
 type TrieNode[T any] struct {
