@@ -291,4 +291,10 @@ func TestCoveredCircularDeque_Clear(t *testing.T) {
 	assert.NotEqual(t, 0, q.Size())
 	q.Clear()
 	assert.Equal(t, 0, q.Size())
+	q.PushBack(4)
+	assert.Equal(t, 1, q.Size())
+	back, b := q.PopBack()
+	assert.True(t, b)
+	assert.Equal(t, 4, back)
+	assert.Equal(t, 0, q.Size())
 }
