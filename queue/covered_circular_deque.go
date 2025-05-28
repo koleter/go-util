@@ -133,3 +133,8 @@ func (d *CoveredCircularDeque[T]) ReverseRange(fn func(item T) bool) {
 		}
 	}
 }
+
+func (q *CoveredCircularDeque[T]) Clear() {
+	q.size = 0
+	q.rear = q.front
+}

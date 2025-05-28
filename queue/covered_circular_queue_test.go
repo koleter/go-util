@@ -306,3 +306,12 @@ func TestReverseRange_StopInMiddle(t *testing.T) {
 		t.Errorf("Expected visited %v, got %v", expected, visited)
 	}
 }
+
+func TestCoveredCircularQueue_Clear(t *testing.T) {
+	q := NewCoveredCircularQueue[int](2)
+	q.Enqueue(3)
+	q.Enqueue(1)
+	assert.NotEqual(t, 0, q.Size())
+	q.Clear()
+	assert.Equal(t, 0, q.Size())
+}

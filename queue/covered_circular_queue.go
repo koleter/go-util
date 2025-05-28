@@ -107,3 +107,8 @@ func (q *CoveredCircularQueue[T]) Back() (T, bool) {
 	}
 	return q.data[q.rear], true
 }
+
+func (q *CoveredCircularQueue[T]) Clear() {
+	q.size = 0
+	q.rear = q.front
+}

@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -281,4 +282,13 @@ func TestReverseRange_CircularBuffer(t *testing.T) {
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("Expected %v, got %v", expected, result)
 	}
+}
+
+func TestCoveredCircularDeque_Clear(t *testing.T) {
+	q := NewCoveredCircularDeque[int](3)
+	q.PushBack(3)
+	q.PushBack(1)
+	assert.NotEqual(t, 0, q.Size())
+	q.Clear()
+	assert.Equal(t, 0, q.Size())
 }
