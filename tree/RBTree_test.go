@@ -296,3 +296,14 @@ func TestRBTree_ReverseRange(t1 *testing.T) {
 	})
 	assert.Equal(t1, []int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, slice)
 }
+
+func TestRBTree_DeleteNode(t *testing.T) {
+	tree := NewRBTree[int, int](intCompare)
+	node := tree.Insert(3, 4)
+	get, exist := tree.Get(3)
+	assert.True(t, exist)
+	assert.Equal(t, 4, get)
+	tree.DeleteNode(node)
+	get, exist = tree.Get(3)
+	assert.False(t, exist)
+}

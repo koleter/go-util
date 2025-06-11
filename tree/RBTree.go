@@ -186,7 +186,7 @@ func (t *RBTree[K, V]) Insert(key K, value V) *Node[K, V] {
 /*
 从红黑树中删除指定的节点
 */
-func (t *RBTree[K, V]) deleteNode(node *Node[K, V]) {
+func (t *RBTree[K, V]) DeleteNode(node *Node[K, V]) {
 	t.size--
 
 	// 最终会被删除的节点
@@ -277,7 +277,7 @@ func (t *RBTree[K, V]) Delete(key K) (V, bool) {
 		var zero V
 		return zero, false
 	}
-	t.deleteNode(node)
+	t.DeleteNode(node)
 	return node.Value, true
 }
 
