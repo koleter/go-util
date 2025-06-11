@@ -227,14 +227,14 @@ func TestDeleteOneChildNode(t *testing.T) {
 	assert.Equal(t, 3, tree.Len())
 }
 
-// 测试 lowestNode 函数
+// 测试 LowestNode 函数
 func TestLowestNode(t *testing.T) {
 	tree := NewRBTree[int, string](intCompare)
-	node := tree.lowestNode()
+	node := tree.LowestNode()
 	assert.Nil(t, node)
 
 	tree.Insert(10, "ten")
-	node = tree.lowestNode()
+	node = tree.LowestNode()
 	assert.Equal(t, 10, node.Key)
 	assert.Equal(t, "ten", node.Value)
 
@@ -243,19 +243,19 @@ func TestLowestNode(t *testing.T) {
 	tree.Insert(2, "two")
 	tree.Insert(7, "seven")
 	tree.Insert(20, "twenty")
-	node = tree.lowestNode()
+	node = tree.LowestNode()
 	assert.Equal(t, 2, node.Key)
 	assert.Equal(t, "two", node.Value)
 }
 
-// 测试 highestNode 函数
+// 测试 HighestNode 函数
 func TestHighestNode(t *testing.T) {
 	tree := NewRBTree[int, string](intCompare)
-	node := tree.highestNode()
+	node := tree.HighestNode()
 	assert.Nil(t, node)
 
 	tree.Insert(10, "ten")
-	node = tree.highestNode()
+	node = tree.HighestNode()
 	assert.Equal(t, 10, node.Key)
 	assert.Equal(t, "ten", node.Value)
 
@@ -264,7 +264,7 @@ func TestHighestNode(t *testing.T) {
 	tree.Insert(2, "two")
 	tree.Insert(7, "seven")
 	tree.Insert(20, "twenty")
-	node = tree.highestNode()
+	node = tree.HighestNode()
 	assert.Equal(t, 20, node.Key)
 	assert.Equal(t, "twenty", node.Value)
 }

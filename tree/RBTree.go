@@ -462,7 +462,7 @@ func (t *RBTree[K, V]) Higher(key K) (V, bool) {
 	return node.Value, true
 }
 
-func (t *RBTree[K, V]) lowestNode() *Node[K, V] {
+func (t *RBTree[K, V]) LowestNode() *Node[K, V] {
 	if t.root == nil {
 		return nil
 	}
@@ -473,7 +473,7 @@ func (t *RBTree[K, V]) lowestNode() *Node[K, V] {
 	return node
 }
 
-func (t *RBTree[K, V]) highestNode() *Node[K, V] {
+func (t *RBTree[K, V]) HighestNode() *Node[K, V] {
 	if t.root == nil {
 		return nil
 	}
@@ -524,7 +524,7 @@ func (t *RBTree[K, V]) predecessor(node *Node[K, V]) *Node[K, V] {
 
 func (t *RBTree[K, V]) Range(fn func(K, V) bool) {
 	mod := t.mod
-	for node := t.lowestNode(); node != nil; node = t.successor(node) {
+	for node := t.LowestNode(); node != nil; node = t.successor(node) {
 		if mod != t.mod {
 			panic("cannot modify a RBTree while traversing it")
 		}
@@ -536,7 +536,7 @@ func (t *RBTree[K, V]) Range(fn func(K, V) bool) {
 
 func (t *RBTree[K, V]) ReverseRange(fn func(K, V) bool) {
 	mod := t.mod
-	for node := t.highestNode(); node != nil; node = t.predecessor(node) {
+	for node := t.HighestNode(); node != nil; node = t.predecessor(node) {
 		if mod != t.mod {
 			panic("cannot modify a RBTree while traversing it")
 		}
