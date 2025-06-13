@@ -48,8 +48,13 @@ func (d *CoveredCircularDeque[T]) PushFront(item T) {
 	} else {
 		d.size++
 	}
-	d.front = (d.front - 1 + d.capacity) % d.capacity
-	d.data[d.front] = item
+	if d.size == 1 {
+		d.data[d.front] = item
+		d.rear = d.front
+	} else {
+		d.front = (d.front - 1 + d.capacity) % d.capacity
+		d.data[d.front] = item
+	}
 }
 
 // PushBack 在队尾插入元素，若队列满则覆盖最头部的数据
@@ -60,8 +65,13 @@ func (d *CoveredCircularDeque[T]) PushBack(item T) {
 	} else {
 		d.size++
 	}
-	d.data[d.rear] = item
-	d.rear = (d.rear + 1) % d.capacity
+	if d.size == 1 {
+		d.data[d.front] = item
+		d.rear = d.front
+	} else {
+		d.rear = (d.rear + 1) % d.capacity
+		d.data[d.rear] = item
+	}
 }
 
 // PopFront 删除并返回队头元素
@@ -82,8 +92,8 @@ func (d *CoveredCircularDeque[T]) PopBack() (T, bool) {
 	if d.IsEmpty() {
 		return zero, false
 	}
-	d.rear = (d.rear - 1 + d.capacity) % d.capacity
 	item := d.data[d.rear]
+	d.rear = (d.rear - 1 + d.capacity) % d.capacity
 	d.size--
 	return item, true
 }
@@ -103,8 +113,7 @@ func (d *CoveredCircularDeque[T]) Back() (T, bool) {
 	if d.IsEmpty() {
 		return zero, false
 	}
-	index := (d.rear - 1 + d.capacity) % d.capacity
-	return d.data[index], true
+	return d.data[d.rear], true
 }
 
 // Range 遍历所有元素，按从 front 到 rear 的顺序执行函数 fn
