@@ -321,3 +321,24 @@ func TestCoveredCircularQueue_Clear(t *testing.T) {
 	assert.Equal(t, 4, dequeue)
 	assert.True(t, q.IsEmpty())
 }
+
+// 测试在容量为1时不停插入数据
+func TestCoveredCircularQueue_Only_One(t *testing.T) {
+	q := NewCoveredCircularQueue[int](1)
+	for i := 0; i < 100; i++ {
+		q.Enqueue(0)
+		assert.Equal(t, 1, q.Size())
+		assert.Equal(t, true, q.IsFull())
+		assert.Equal(t, 0, q.front)
+		assert.Equal(t, 0, q.rear)
+		flag := false
+		q.Range(func(item int) bool {
+			if item == 0 {
+				flag = true
+				return false
+			}
+			return true
+		})
+		assert.True(t, flag)
+	}
+}
