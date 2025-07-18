@@ -52,7 +52,7 @@ func (m *MultiKeyMap[K, V]) Put(keys []K, val V) V {
 	return res
 }
 
-func (m *MultiKeyMap[K, V]) Get(keys []K) (V, bool) {
+func (m *MultiKeyMap[K, V]) Get(keys ...K) (V, bool) {
 	var zero V
 	node := m.root
 	for _, key := range keys {
@@ -68,7 +68,8 @@ func (m *MultiKeyMap[K, V]) Get(keys []K) (V, bool) {
 	return zero, false
 }
 
-func (m *MultiKeyMap[K, V]) GetPrefix(keys []K) []V {
+// GetPrefix 获取前缀key的所有value值，返回的列表是无序的
+func (m *MultiKeyMap[K, V]) GetPrefix(keys ...K) []V {
 	var res []V
 	node := m.root
 	for _, key := range keys {
@@ -102,7 +103,7 @@ func (m *MultiKeyMap[K, V]) delete(node *node[K, V], keys []K) (V, bool) {
 	return res, false
 }
 
-func (m *MultiKeyMap[K, V]) Delete(keys []K) (V, bool) {
+func (m *MultiKeyMap[K, V]) Delete(keys ...K) (V, bool) {
 	var zero V
 	if len(keys) == 0 {
 		return zero, false

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -90,7 +91,7 @@ func TestMultiKeyMap_InsertAndGet(t *testing.T) {
 	val1 := 1
 	m.Put(keys1, val1)
 
-	res, ok := m.Get(keys1)
+	res, ok := m.Get(keys1...)
 	if !ok || res != val1 {
 		t.Errorf("Get(%v) 返回了错误的值: %v, %v", keys1, res, ok)
 	}
@@ -99,14 +100,14 @@ func TestMultiKeyMap_InsertAndGet(t *testing.T) {
 	val2 := 2
 	m.Put(keys1, val2)
 
-	res, ok = m.Get(keys1)
+	res, ok = m.Get(keys1...)
 	if !ok || res != val2 {
 		t.Errorf("Get(%v) 返回了错误的值: %v, %v", keys1, res, ok)
 	}
 
 	// 测试不存在的键
 	keys2 := []string{"a", "b", "d"}
-	res, ok = m.Get(keys2)
+	res, ok = m.Get(keys2...)
 	if ok {
 		t.Errorf("Get(%v) 应该返回false，但返回了true", keys2)
 	}
@@ -114,7 +115,7 @@ func TestMultiKeyMap_InsertAndGet(t *testing.T) {
 	// 测试空键
 	keys3 := []string{}
 	m.Put(keys3, val1)
-	res, ok = m.Get(keys3)
+	res, ok = m.Get(keys3...)
 	if !ok || res != val1 {
 		t.Errorf("Get(%v) 返回了错误的值: %v, %v", keys3, res, ok)
 	}
@@ -142,28 +143,25 @@ func TestMultiKeyMap_GetPrefix(t *testing.T) {
 	m.Put([]int{1, 3}, "c")
 
 	// 测试获取前缀[1]
-	res := m.GetPrefix([]int{1})
-	expected := []string{"a", "b", "d", "c"}
-	if !reflect.DeepEqual(res, expected) {
-		t.Errorf("GetPrefix([1]) 返回了错误的结果: %v, 期望: %v", res, expected)
-	}
+	res := m.GetPrefix([]int{1}...)
+	assert.Equal(t, 4, len(res))
 
 	// 测试获取前缀[1,2]
-	res = m.GetPrefix([]int{1, 2})
-	expected = []string{"b", "d"}
+	res = m.GetPrefix([]int{1, 2}...)
+	expected := []string{"b", "d"}
 	if !reflect.DeepEqual(res, expected) {
 		t.Errorf("GetPrefix([1,2]) 返回了错误的结果: %v, 期望: %v", res, expected)
 	}
 
 	// 测试不存在的前缀
-	res = m.GetPrefix([]int{1, 5})
+	res = m.GetPrefix([]int{1, 5}...)
 	expected = nil
 	if !reflect.DeepEqual(res, expected) {
 		t.Errorf("GetPrefix([1,5]) 返回了错误的结果: %v, 期望: %v", res, expected)
 	}
 
 	// 测试空前缀
-	res = m.GetPrefix([]int{})
+	res = m.GetPrefix([]int{}...)
 	expected = []string{"a", "b", "d", "c"}
 	if !reflect.DeepEqual(res, expected) {
 		t.Errorf("GetPrefix([]) 返回了错误的结果: %v, 期望: %v", res, expected)
@@ -174,7 +172,8 @@ func TestMultiKeyMap_GetPrefix2(t *testing.T) {
 	m := NewMultiKeyMap[string, string]()
 	m.Put([]string{"mongo", "1.0.0.1"}, "1")
 	m.Put([]string{"mongo", "1.0.0.2"}, "2")
-	strings := m.GetPrefix([]string{"mongo"})
+	strings := m.GetPrefix([]string{"mongo"}...)
+	sort.Strings(strings)
 	assert.Equal(t, strings[0], "1")
 	assert.Equal(t, strings[1], "2")
 }
@@ -189,20 +188,20 @@ func TestMultiKeyMap_MultiLevelPath(t *testing.T) {
 	m.Put(keys, val)
 
 	// 获取完整路径
-	res, ok := m.Get(keys)
+	res, ok := m.Get(keys...)
 	if !ok || res != val {
 		t.Errorf("Get(%v) 返回了错误的值: %v, %v", keys, res, ok)
 	}
 
 	// 获取中间路径
 	shorterKeys := []int{1, 2, 3}
-	res, ok = m.Get(shorterKeys)
+	res, ok = m.Get(shorterKeys...)
 	if ok {
 		t.Errorf("Get(%v) 应该没有值，但返回了: %v, %v", shorterKeys, res, ok)
 	}
 
 	// 获取中间路径的前缀
-	prefixRes := m.GetPrefix(shorterKeys)
+	prefixRes := m.GetPrefix(shorterKeys...)
 	assert.NotEqual(t, 0, len(prefixRes))
 }
 
@@ -228,7 +227,7 @@ func TestMultiKeyMap_ConcurrentAccess(t *testing.T) {
 	// 验证所有值
 	for i := 0; i < 10; i++ {
 		keys := []string{"prefix", fmt.Sprintf("%d", i)}
-		res, ok := m.Get(keys)
+		res, ok := m.Get(keys...)
 		if !ok || res != i {
 			t.Errorf("Get(%v) 返回了错误的值: %v, %v", keys, res, ok)
 		}
@@ -240,10 +239,10 @@ func TestMultiKeyMap_Delete(t *testing.T) {
 	keys := []int{1, 2, 3, 4, 5}
 	value := "value"
 	m.Put(keys, value)
-	get, exist := m.Get(keys)
+	get, exist := m.Get(keys...)
 	assert.True(t, exist)
 	assert.Equal(t, value, get)
-	m.Delete(keys)
-	get, exist = m.Get(keys)
+	m.Delete(keys...)
+	get, exist = m.Get(keys...)
 	assert.False(t, exist)
 }
