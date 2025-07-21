@@ -1,4 +1,4 @@
-package _map
+package concurrency
 
 import (
 	"github.com/koleter/go-util/concurrency/lock"
