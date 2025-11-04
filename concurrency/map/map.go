@@ -7,7 +7,7 @@ type Map[K comparable, V any] interface {
 	PutAll(m map[K]V)
 	PutIfAbsent(key K, val V) V
 	Get(key K) (V, bool)
-	Delete(key K)
+	Delete(key K) (V, bool)
 	Clear()
 	Keys() []K
 	Values() []V

@@ -59,10 +59,14 @@ func (t *ThreadSafeMap[K, V]) Get(key K) (V, bool) {
 	return val, ok
 }
 
-func (t *ThreadSafeMap[K, V]) Delete(key K) {
+func (t *ThreadSafeMap[K, V]) Delete(key K) (V, bool) {
 	t.lock.Lock()
 	defer t.lock.Unlock()
-	delete(t.raw_map, key)
+	v, ok := t.raw_map[key]
+	if ok {
+		delete(t.raw_map, key)
+	}
+	return v, ok
 }
 
 // Clear 清空
